@@ -21,8 +21,8 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: us-east-1 # TODO: infer the region from SST config
-          role-to-assume: arn:aws:iam::965517595227:role/prod-ga-test-aws-deployme-githubactionaccessCDE4795-oizFu9z2ggAi # TODO: infer from the SST outputs
-          role-session-name: github-actions-access
+          role-to-assume: arn:aws:iam::965517595227:role/Tst-wipeme-github-access # TODO: infer from the SST outputs
+#          role-session-name: github-actions-access
       - name: Deploy
         run: |
           npx sst deploy --stage prod
