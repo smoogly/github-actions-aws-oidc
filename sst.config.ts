@@ -1,6 +1,14 @@
 import {SSTConfig} from "sst";
-import {Function, FunctionInlineDefinition, Config} from "sst/constructs";
-import {ManagedPolicy, OpenIdConnectProvider, Role, WebIdentityPrincipal} from "aws-cdk-lib/aws-iam";
+import {Config, Function} from "sst/constructs";
+import {
+    Effect,
+    OpenIdConnectProvider,
+    PolicyDocument,
+    PolicyStatement,
+    Role,
+    WebIdentityPrincipal
+} from "aws-cdk-lib/aws-iam";
+import {DefaultStackSynthesizer} from "aws-cdk-lib";
 
 export default {
     config(_input) {
@@ -22,15 +30,32 @@ export default {
             const oidc = OpenIdConnectProvider.fromOpenIdConnectProviderArn(stack, "oidc", githubOIDCProvider);
 
             // Define a role allowing the OIDC access to specific github users
+            const bootstrapQualifier = stack.synthesizer.bootstrapQualifier ?? DefaultStackSynthesizer.DEFAULT_QUALIFIER;
             new Role(stack, "github-action-access", {
                 assumedBy: new WebIdentityPrincipal(oidc.openIdConnectProviderIssuer, {
                     "StringEquals": {
                         'token.actions.githubusercontent.com:sub': ['repo:rangle/cmap-availability:ref:refs/heads/main'],
-                        'token.actions.githubusercontent.com:actor': ['hahanope']
+                        'token.actions.githubusercontent.com:actor': ['smoogly']
                     },
                 }),
 
-                managedPolicies: [ManagedPolicy.fromAwsManagedPolicyName("AdministratorAccess")],
+                inlinePolicies: {
+                    'cdk': new PolicyDocument({
+                        statements: [
+                            new PolicyStatement({
+                                effect: Effect.ALLOW,
+                                actions: [
+                                    "sts:AssumeRoleWithWebIdentity"
+                                ],
+                                resources: [
+                                    // Policy allowing a OIDC token holder to assume
+                                    // the CDK role used for deployment
+                                    `arn:aws:iam::${app.account}:role/cdk-${bootstrapQualifier}-cfn-exec-role-*`,
+                                ]
+                            })
+                        ]
+                    }),
+                }
             });
 
             // Mock deployment
