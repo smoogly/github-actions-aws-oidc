@@ -34,11 +34,10 @@ export default {
             const repoName = 'smoogly/github-actions-aws-oidc';
             const bootstrapQualifier = stack.synthesizer.bootstrapQualifier ?? DefaultStackSynthesizer.DEFAULT_QUALIFIER;
             const githubAccessRole = new Role(stack, "github-action-access", {
-                assumedBy: new WebIdentityPrincipal(oidc.openIdConnectProviderIssuer, {
+                assumedBy: new WebIdentityPrincipal(oidc.openIdConnectProviderArn, {
                     "StringEquals": {
                         'token.actions.githubusercontent.com:sub': ['repo:' + repoName + ':ref:refs/heads/' + branch],
-                        'token.actions.githubusercontent.com:aud': "sts.amazonaws.com",
-                        // 'token.actions.githubusercontent.com:actor': ['smoogly']
+                        'token.actions.githubusercontent.com:aud': ['smoogly']
                     },
                 }),
 
