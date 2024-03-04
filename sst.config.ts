@@ -33,11 +33,22 @@ export default {
             const branch = 'main';
             const repoName = 'smoogly/github-actions-aws-oidc';
             const bootstrapQualifier = stack.synthesizer.bootstrapQualifier ?? DefaultStackSynthesizer.DEFAULT_QUALIFIER;
+            const users = [`smoogly`];
+
+            // Sub claim keys for this repo updated using the below,
+            // in order to contain reference to the actor.
+            //
+            // curl -L \
+            //   -X PUT \
+            //   -H "Accept: application/vnd.github+json" \
+            //   -H "Authorization: Bearer <TOKEN>" \
+            //   -H "X-GitHub-Api-Version: 2022-11-28" \
+            //   https://api.github.com/repos/smoogly/github-actions-aws-oidc/actions/oidc/customization/sub \
+            //   -d '{"use_default":false,"include_claim_keys":["repo","context","actor"]}'
             const githubAccessRole = new Role(stack, "github-action-access", {
                 assumedBy: new WebIdentityPrincipal(oidc.openIdConnectProviderArn, {
                     "StringEquals": {
-                        'token.actions.githubusercontent.com:sub': ['repo:' + repoName + ':ref:refs/heads/' + branch],
-                        'token.actions.githubusercontent.com:aud': ['smoogly']
+                        'token.actions.githubusercontent.com:sub': users.map(user => `repo:${repoName}:ref:refs/heads/${branch}:actor:${user}`),
                     },
                 }),
 
