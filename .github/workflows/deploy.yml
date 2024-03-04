@@ -19,6 +19,8 @@ jobs:
         uses: actions/checkout@v2
       - name: Get AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: us-east-1 # TODO: infer the region from SST config
       - name: Deploy
         run: |
           npx sst deploy --stage prod
