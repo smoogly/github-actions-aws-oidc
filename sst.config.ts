@@ -31,7 +31,7 @@ export default {
 
             // Define a role allowing the OIDC access to specific github users
             const bootstrapQualifier = stack.synthesizer.bootstrapQualifier ?? DefaultStackSynthesizer.DEFAULT_QUALIFIER;
-            new Role(stack, "github-action-access", {
+            const githubAccessRole = new Role(stack, "github-action-access", {
                 assumedBy: new WebIdentityPrincipal(oidc.openIdConnectProviderIssuer, {
                     "StringEquals": {
                         'token.actions.githubusercontent.com:sub': ['repo:rangle/cmap-availability:ref:refs/heads/main'],
@@ -56,6 +56,10 @@ export default {
                         ]
                     }),
                 }
+            });
+
+            stack.addOutputs({
+                githubAccessRoleArn: githubAccessRole.roleArn, // TODO: how to use this for deployment?
             });
 
             // Mock deployment
