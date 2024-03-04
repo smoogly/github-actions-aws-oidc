@@ -1,0 +1,20 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout️
+        uses: actions/checkout@v2
+      - name: Get AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          permissions:
+            id-token: write
+            contents: read
+      - name: Deploy
+        run: |
+          npx sst deploy --stage prod
