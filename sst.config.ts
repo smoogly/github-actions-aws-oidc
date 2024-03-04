@@ -30,11 +30,13 @@ export default {
             const oidc = OpenIdConnectProvider.fromOpenIdConnectProviderArn(stack, "oidc", githubOIDCProvider);
 
             // Define a role allowing the OIDC access to specific github users
+            const branch = 'main';
+            const repoName = 'smoogly/github-actions-aws-oidc';
             const bootstrapQualifier = stack.synthesizer.bootstrapQualifier ?? DefaultStackSynthesizer.DEFAULT_QUALIFIER;
             const githubAccessRole = new Role(stack, "github-action-access", {
                 assumedBy: new WebIdentityPrincipal(oidc.openIdConnectProviderIssuer, {
                     "StringEquals": {
-                        'token.actions.githubusercontent.com:sub': ['repo:rangle/cmap-availability:ref:refs/heads/main'],
+                        'token.actions.githubusercontent.com:sub': ['repo:' + repoName + ':ref:refs/heads/' + branch],
                         'token.actions.githubusercontent.com:actor': ['smoogly']
                     },
                 }),
