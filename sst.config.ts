@@ -37,7 +37,8 @@ export default {
                 assumedBy: new WebIdentityPrincipal(oidc.openIdConnectProviderIssuer, {
                     "StringEquals": {
                         'token.actions.githubusercontent.com:sub': ['repo:' + repoName + ':ref:refs/heads/' + branch],
-                        'token.actions.githubusercontent.com:actor': ['smoogly']
+                        'token.actions.githubusercontent.com:aud': "sts.amazonaws.com",
+                        // 'token.actions.githubusercontent.com:actor': ['smoogly']
                     },
                 }),
 
