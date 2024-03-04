@@ -2,6 +2,11 @@ name: Deploy
 
 on:
   workflow_dispatch:
+    inputs:
+      val:
+        description: "Returned value"
+        required: true
+        type: string
 
 jobs:
   deploy:
@@ -17,3 +22,5 @@ jobs:
       - name: Deploy
         run: |
           npx sst deploy --stage prod
+        env:
+          MOCK_VALUE: ${{ inputs.val }}

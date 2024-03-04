@@ -62,8 +62,8 @@ export default {
             new Function(stack, "mock-deployment", {
                 handler: "mockdeploy/mockfn.handler",
                 bind: [
-                    new Config.Parameter(stack, "RAND", {
-                        value: String(Math.random()),
+                    new Config.Parameter(stack, "VAL", {
+                        value: process.env.MOCK_VALUE ?? "UNKNOWN",
                     }),
                 ],
                 disableCloudWatchLogs: true,
